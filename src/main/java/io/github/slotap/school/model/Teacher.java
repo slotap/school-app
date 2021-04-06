@@ -9,7 +9,7 @@ public class Teacher extends SchoolMember {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    private String subject;
+    private String teachingSubject;
 
     public Teacher(){}
 
@@ -18,15 +18,15 @@ public class Teacher extends SchoolMember {
         this.lastname = lastname;
         this.age = age;
         this.email = email;
-        this.subject = subject;
+        this.teachingSubject = subject;
     }
 
-    public String getSubject() {
-        return subject;
+    public String getTeachingSubject() {
+        return teachingSubject;
     }
 
-    private void setSubject(String subject) {
-        this.subject = subject;
+    private void setTeachingSubject(String subject) {
+        this.teachingSubject = subject;
     }
 
     public long getId() {
@@ -42,10 +42,10 @@ public class Teacher extends SchoolMember {
         if (this == o) return true;
         if (!(o instanceof Teacher)) return false;
         Teacher teacher = (Teacher) o;
-        return id == teacher.id && age == teacher.age && firstname.equals(teacher.firstname) && lastname.equals(teacher.lastname) && subject.equals(teacher.subject) && email.equals(teacher.email);
+        return id == teacher.id && age == teacher.age && firstname.equals(teacher.firstname) && lastname.equals(teacher.lastname) && teachingSubject.equals(teacher.teachingSubject) && email.equals(teacher.email);
     }
     @Override
     public int hashCode() {
-        return Objects.hash(id, subject,firstname,lastname, age, email);
+        return Objects.hash(id, teachingSubject,firstname,lastname, age, email);
     }
 }
