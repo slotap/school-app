@@ -1,15 +1,31 @@
 package io.github.slotap.school.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "teachers")
 public class Teacher extends SchoolMember {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @NotNull
     private long id;
     private String teachingSubject;
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinTable(name = "students_teachers",
+                        joinColumns = {
+                            @JoinColumn(name="teacher_id", referencedColumnName = "id",
+                            nullable = false,updatable = false)
+                        },
+                        inverseJoinColumns = {
+                            @JoinColumn(name="student_id", referencedColumnName = "id",
+                            nullable = false,updatable = false)
+                        })
+    private Set<Student> students = new HashSet<>();
 
     public Teacher(){}
 
@@ -33,8 +49,16 @@ public class Teacher extends SchoolMember {
         return id;
     }
 
-    private void setId(int id) {
+    private void setId(long id) {
         this.id = id;
+    }
+
+    public Set<Student> getStudents() {
+        return students;
+    }
+
+    private void setStudents(Set<Student> students) {
+        this.students = students;
     }
 
     @Override
