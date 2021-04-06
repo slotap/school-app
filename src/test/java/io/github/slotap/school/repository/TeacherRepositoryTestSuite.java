@@ -46,7 +46,7 @@ public class TeacherRepositoryTestSuite {
         assertNotEquals(0, aWajdaId);
 
         //CleanUp
-      try{
+/*      try{
             teacherRepository.deleteById(janMikrutId);
             teacherRepository.deleteById(aWajdaId);
             studentRepository.deleteById(janKowalski.getId());
@@ -54,6 +54,6 @@ public class TeacherRepositoryTestSuite {
             studentRepository.deleteById(krzysztofIbisz.getId());
         }catch (Exception e){
           e.printStackTrace();
-        }
+        }*/
     }
 }

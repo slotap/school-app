@@ -1,5 +1,7 @@
 package io.github.slotap.school.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
@@ -14,6 +16,7 @@ public class Teacher extends SchoolMember {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @NotNull
     private long id;
+    @NotNull
     private String teachingSubject;
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinTable(name = "students_teachers",
@@ -25,6 +28,7 @@ public class Teacher extends SchoolMember {
                             @JoinColumn(name="student_id", referencedColumnName = "id",
                             nullable = false,updatable = false)
                         })
+    @JsonIgnore
     private Set<Student> students = new HashSet<>();
 
     public Teacher(){}

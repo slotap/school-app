@@ -1,5 +1,7 @@
 package io.github.slotap.school.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
@@ -13,8 +15,10 @@ public class Student extends SchoolMember {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @NotNull
     private long id;
+    @NotNull
     private String degreeCourse;
     @ManyToMany(mappedBy = "students", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JsonIgnore
     private Set<Teacher> teachers = new HashSet<>();
 
     public Student(){}

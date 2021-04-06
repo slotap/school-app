@@ -1,12 +1,19 @@
 package io.github.slotap.school.model;
 
 import javax.persistence.MappedSuperclass;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
 
 @MappedSuperclass
 abstract class SchoolMember {
+
+    @Size(min = 3, message = "Firstname must have at least 3 characters")
     protected String firstname;
     protected String lastname;
+    @Min(value = 18,message = "Age must be more than 18")
     protected int age;
+    @Email
     protected String email;
 
     public String getFirstname() {
