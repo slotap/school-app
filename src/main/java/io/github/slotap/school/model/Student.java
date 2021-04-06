@@ -67,4 +67,13 @@ public class Student extends SchoolMember {
     public int hashCode() {
         return Objects.hash(id, degreeCourse, firstname, lastname, email, age);
     }
+
+    public void updateStudent(Student toUpdate) {
+        setFirstname(toUpdate.getFirstname());
+        setLastname(toUpdate.getLastname());
+        setEmail(toUpdate.getEmail());
+        setAge(toUpdate.getAge());
+        setDegreeCourse(toUpdate.getDegreeCourse());
+        setTeachers(toUpdate.getTeachers());
+    }
 }

@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class DbStudentService {
     private final StudentRepository studentRepository;
@@ -16,5 +18,21 @@ public class DbStudentService {
 
     public Page<Student> getAll(Pageable page) {
         return studentRepository.findAll(page);
+    }
+
+    public Student createStudent(final Student createStudent) {
+        return studentRepository.save(createStudent);
+    }
+
+    public void deleteStudent(final long id){
+        studentRepository.deleteById(id);
+    }
+
+    public Optional<Student> getStudent (final long id){
+        return studentRepository.findById(id);
+    }
+
+    public boolean existById(long id){
+        return studentRepository.existsById(id);
     }
 }
