@@ -9,13 +9,13 @@ import java.util.stream.Collectors;
 
 @Service
 public class StudentMapper {
-    public List<StudentDto> mapToStudentDtoList(List<Student> studentList){
+    public List<StudentDto> mapToStudentDtoList(final List<Student> studentList){
         return studentList.stream()
                 .map(this::mapToStudentDto)
                 .collect(Collectors.toList());
     }
 
-    private StudentDto mapToStudentDto(final Student student) {
+    public StudentDto mapToStudentDto(final Student student) {
         return new StudentDto(
                     student.getId(),
                     student.getFirstname(),

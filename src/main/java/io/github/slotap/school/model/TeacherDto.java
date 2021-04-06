@@ -2,23 +2,23 @@ package io.github.slotap.school.model;
 
 import java.util.Set;
 
-public class StudentDto {
+public class TeacherDto {
     private final long id;
     private final String firstname;
     private final String lastname;
     private final int age;
     private final String email;
-    private final String degreeCourse;
-    private final Set<Teacher> teacherSet;
+    private final String teachingSubject;
+    private final Set<Student> studentSet;
 
-    public StudentDto(long id, String firstname, String lastname, int age, String email, String degreeCourse, Set<Teacher> teacherSet) {
+    public TeacherDto(long id, String firstname, String lastname, int age, String email, String teachingSubject, Set<Student> studentSet) {
         this.id = id;
         this.firstname = firstname;
         this.lastname = lastname;
         this.age = age;
         this.email = email;
-        this.degreeCourse = degreeCourse;
-        this.teacherSet = teacherSet;
+        this.teachingSubject = teachingSubject;
+        this.studentSet = studentSet;
     }
 
     public long getId() {
@@ -41,11 +41,11 @@ public class StudentDto {
         return email;
     }
 
-    public String getDegreeCourse() {
-        return degreeCourse;
+    public String getTeachingSubject() {
+        return teachingSubject;
     }
 
-    public Set<Teacher> getTeacherSet() {
-        return teacherSet;
+    public Set<Student> getStudentSet() {
+        return studentSet;
     }
 }

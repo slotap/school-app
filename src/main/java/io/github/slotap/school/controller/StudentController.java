@@ -3,7 +3,7 @@ package io.github.slotap.school.controller;
 import io.github.slotap.school.mapper.StudentMapper;
 import io.github.slotap.school.model.Student;
 import io.github.slotap.school.model.StudentDto;
-import io.github.slotap.school.service.DbService;
+import io.github.slotap.school.service.DbStudentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
@@ -18,10 +18,10 @@ import java.util.List;
 @RequestMapping("/students")
 public class StudentController {
     private static final Logger logger = LoggerFactory.getLogger(StudentController.class);
-    private final DbService dbService;
+    private final DbStudentService dbService;
     private final StudentMapper studentMapper;
 
-    public StudentController(DbService dbService, StudentMapper studentMapper) {
+    public StudentController(DbStudentService dbService, StudentMapper studentMapper) {
         this.dbService = dbService;
         this.studentMapper = studentMapper;
     }
