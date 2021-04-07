@@ -18,7 +18,7 @@ abstract class SchoolMember {
     @Min(value = 18,message = "Age must be more than 18")
     protected int age;
     @NotNull
-    @Email(message = "email incorrect")
+    @Email(message = "Email incorrect")
     protected String email;
 
     public String getFirstname() {

@@ -31,6 +31,15 @@ public class Student extends SchoolMember {
         this.degreeCourse = degreeCourse;
     }
 
+    public void updateStudent(Student toUpdate) {
+        setFirstname(toUpdate.getFirstname());
+        setLastname(toUpdate.getLastname());
+        setEmail(toUpdate.getEmail());
+        setAge(toUpdate.getAge());
+        setDegreeCourse(toUpdate.getDegreeCourse());
+        setTeachers(toUpdate.getTeachers());
+    }
+
     public String getDegreeCourse() {
         return degreeCourse;
     }
@@ -66,14 +75,5 @@ public class Student extends SchoolMember {
     @Override
     public int hashCode() {
         return Objects.hash(id, degreeCourse, firstname, lastname, email, age);
-    }
-
-    public void updateStudent(Student toUpdate) {
-        setFirstname(toUpdate.getFirstname());
-        setLastname(toUpdate.getLastname());
-        setEmail(toUpdate.getEmail());
-        setAge(toUpdate.getAge());
-        setDegreeCourse(toUpdate.getDegreeCourse());
-        setTeachers(toUpdate.getTeachers());
     }
 }

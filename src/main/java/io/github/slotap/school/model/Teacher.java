@@ -16,7 +16,7 @@ public class Teacher extends SchoolMember {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @NotNull
     private long id;
-    @NotNull
+    @NotNull(message = "Subject name required")
     private String teachingSubject;
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinTable(name = "students_teachers",
@@ -39,6 +39,15 @@ public class Teacher extends SchoolMember {
         this.age = age;
         this.email = email;
         this.teachingSubject = subject;
+    }
+
+    public void updateTeacher(Teacher toUpdate) {
+        setFirstname(toUpdate.getFirstname());
+        setLastname(toUpdate.getLastname());
+        setEmail(toUpdate.getEmail());
+        setAge(toUpdate.getAge());
+        setTeachingSubject(toUpdate.getTeachingSubject());
+        setStudents(toUpdate.getStudents());
     }
 
     public String getTeachingSubject() {
@@ -76,4 +85,5 @@ public class Teacher extends SchoolMember {
     public int hashCode() {
         return Objects.hash(id, teachingSubject,firstname,lastname, age, email);
     }
+
 }

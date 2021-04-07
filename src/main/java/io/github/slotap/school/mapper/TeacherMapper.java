@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class TeacherMapper {
-    private TeacherDto mapToTeacherDto(final Teacher teacher){
+    public TeacherDto mapToTeacherDto(final Teacher teacher){
         return new TeacherDto(
                 teacher.getId(),
                 teacher.getFirstname(),
