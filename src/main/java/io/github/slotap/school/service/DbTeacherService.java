@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -34,5 +35,9 @@ public class DbTeacherService {
 
     public boolean existById(long id){
         return teacherRepository.existsById(id);
+    }
+
+    public List<Teacher> findByName(final String lastName, final String firstName){
+       return teacherRepository.findByLastnameOrFirstnameOrderByLastname(lastName,firstName);
     }
 }

@@ -39,13 +39,13 @@ public class TeacherController {
 
     @GetMapping("/{id}")
     public ResponseEntity<TeacherDto> getOneTeacher(@PathVariable long id){
-        logger.info("Fetching one teachers");
+        logger.info("Fetching a teacher");
         return dbService.getTeacher(id)
                 .map(teacher -> ResponseEntity.ok(teacherMapper.mapToTeacherDto(teacher)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/filter/{id}")
+    @GetMapping("/{id}/students")
     public ResponseEntity<?> getFilteredStudents(@PathVariable long id){
         logger.info("Filtering all students assigned to a selected teacher");
         return dbService.getTeacher(id)
@@ -55,6 +55,13 @@ public class TeacherController {
                                     .collect(Collectors.toSet()))
                 .map(studentSet -> ResponseEntity.ok(studentSet))
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<TeacherDto>> findTeachersByName(@RequestParam(name = "lastname") String lastName,@RequestParam(name = "firstname") String firstName ){
+        logger.info("Looking for searched Teachers");
+        List<Teacher> resultList = dbService.findByName(lastName,firstName);
+        return ResponseEntity.ok(teacherMapper.mapToTeacherDtoList(resultList));
     }
 
     @PostMapping
