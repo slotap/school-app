@@ -33,6 +33,13 @@ public class StudentController {
         return ResponseEntity.ok(studentMapper.mapToStudentDtoList(studentList));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<StudentDto> getOneStudent(@PathVariable long id){
+            return dbService.getStudent(id)
+                    .map(student -> ResponseEntity.ok(studentMapper.mapToStudentDto(student)))
+                    .orElse(ResponseEntity.notFound().build());
+    }
+
     @PostMapping
     public ResponseEntity<StudentDto> createStudent(@RequestBody @Valid Student newStudent){
         logger.info("Creating new Student");

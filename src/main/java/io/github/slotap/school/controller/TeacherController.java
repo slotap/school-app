@@ -33,6 +33,13 @@ public class TeacherController {
         return ResponseEntity.ok(teacherMapper.mapToTeacherDtoList(teacherList));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<TeacherDto> getOneTeacher(@PathVariable long id){
+        return dbService.getTeacher(id)
+                .map(teacher -> ResponseEntity.ok(teacherMapper.mapToTeacherDto(teacher)))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @PostMapping
     public ResponseEntity<TeacherDto> createTeacher(@RequestBody @Valid Teacher newTeacher){
         logger.info("Creating new Teacher");
