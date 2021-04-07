@@ -34,10 +34,10 @@ public class StudentController {
     }
 
     @PostMapping
-    public ResponseEntity<Student> createStudent(@RequestBody @Valid Student createStudent){
+    public ResponseEntity<StudentDto> createStudent(@RequestBody @Valid Student newStudent){
         logger.info("Creating new Student");
-        Student result = dbService.createStudent(createStudent);
-        return ResponseEntity.created(URI.create("/" + result.getId())).body(result);
+        Student result = dbService.saveStudent(newStudent);
+        return ResponseEntity.created(URI.create("/" + result.getId())).body(studentMapper.mapToStudentDto(result));
     }
 
     @PutMapping("/{id}")
@@ -46,19 +46,20 @@ public class StudentController {
         if(!dbService.existById(id)){
             return ResponseEntity.notFound().build();
         }
-        dbService.getStudent(id).ifPresent( student -> student.updateStudent(toUpdate));
+        dbService.getStudent(id).ifPresent(student ->{
+                                                        student.updateStudent(toUpdate);
+                                                        dbService.saveStudent(student);
+                                            });
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteStudent(@PathVariable long id){
+    public ResponseEntity<?> deleteStudent(@PathVariable long id) {
         logger.info("Deleting Student");
-        if(!dbService.existById(id)){
+        if (!dbService.existById(id)) {
             return ResponseEntity.notFound().build();
         }
         dbService.deleteStudent(id);
         return ResponseEntity.noContent().build();
     }
-
-
 }

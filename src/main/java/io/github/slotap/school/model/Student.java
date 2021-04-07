@@ -15,7 +15,7 @@ public class Student extends SchoolMember {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @NotNull
     private long id;
-    @NotNull
+    @NotNull(message = "Course Name required")
     private String degreeCourse;
     @ManyToMany(mappedBy = "students", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JsonIgnore

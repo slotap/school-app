@@ -20,7 +20,7 @@ public class DbStudentService {
         return studentRepository.findAll(page);
     }
 
-    public Student createStudent(final Student createStudent) {
+    public Student saveStudent(final Student createStudent) {
         return studentRepository.save(createStudent);
     }
 
