@@ -1,6 +1,7 @@
 package io.github.slotap.school.controller;
 
 import io.github.slotap.school.mapper.StudentMapper;
+import io.github.slotap.school.mapper.TeacherMapper;
 import io.github.slotap.school.model.Student;
 import io.github.slotap.school.model.StudentDto;
 import io.github.slotap.school.service.DbStudentService;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/students")
@@ -20,10 +22,12 @@ public class StudentController {
     private static final Logger logger = LoggerFactory.getLogger(StudentController.class);
     private final DbStudentService dbService;
     private final StudentMapper studentMapper;
+    private final TeacherMapper teacherMapper;
 
-    public StudentController(DbStudentService dbService, StudentMapper studentMapper) {
+    public StudentController(DbStudentService dbService, StudentMapper studentMapper, TeacherMapper teacherMapper) {
         this.dbService = dbService;
         this.studentMapper = studentMapper;
+        this.teacherMapper = teacherMapper;
     }
 
     @GetMapping
@@ -38,6 +42,18 @@ public class StudentController {
             return dbService.getStudent(id)
                     .map(student -> ResponseEntity.ok(studentMapper.mapToStudentDto(student)))
                     .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/filter/{id}")
+    public ResponseEntity<?> getFilteredTeachers(@PathVariable long id){
+        logger.info("Filtering all teachers assigned to a selected student");
+        return dbService.getStudent(id)
+                .map(Student::getTeachers)
+                .map(teachers -> teachers.stream()
+                        .map(teacherMapper::mapToTeacherDto)
+                        .collect(Collectors.toSet()))
+                .map(teachersSet -> ResponseEntity.ok(teachersSet))
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping

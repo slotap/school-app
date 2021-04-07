@@ -1,5 +1,6 @@
 package io.github.slotap.school.controller;
 
+import io.github.slotap.school.mapper.StudentMapper;
 import io.github.slotap.school.mapper.TeacherMapper;
 import io.github.slotap.school.model.Teacher;
 import io.github.slotap.school.model.TeacherDto;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/teachers")
@@ -20,10 +22,12 @@ public class TeacherController {
     private static final Logger logger = LoggerFactory.getLogger(StudentController.class);
     private final DbTeacherService dbService;
     private final TeacherMapper teacherMapper;
+    private final StudentMapper studentMapper;
 
-    public TeacherController(DbTeacherService dbService, TeacherMapper teacherMapper) {
+    public TeacherController(DbTeacherService dbService, TeacherMapper teacherMapper, StudentMapper studentMapper) {
         this.dbService = dbService;
         this.teacherMapper = teacherMapper;
+        this.studentMapper = studentMapper;
     }
 
     @GetMapping
@@ -35,8 +39,21 @@ public class TeacherController {
 
     @GetMapping("/{id}")
     public ResponseEntity<TeacherDto> getOneTeacher(@PathVariable long id){
+        logger.info("Fetching one teachers");
         return dbService.getTeacher(id)
                 .map(teacher -> ResponseEntity.ok(teacherMapper.mapToTeacherDto(teacher)))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/filter/{id}")
+    public ResponseEntity<?> getFilteredStudents(@PathVariable long id){
+        logger.info("Filtering all students assigned to a selected teacher");
+        return dbService.getTeacher(id)
+                .map(Teacher::getStudents)
+                .map(students -> students.stream()
+                                    .map(studentMapper::mapToStudentDto)
+                                    .collect(Collectors.toSet()))
+                .map(studentSet -> ResponseEntity.ok(studentSet))
                 .orElse(ResponseEntity.notFound().build());
     }
 

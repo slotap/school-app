@@ -9,4 +9,5 @@ import javax.transaction.Transactional;
 @Transactional
 @Repository
 public interface TeacherRepository extends JpaRepository<Teacher,Long> {
+ //  List<Teacher> findAllByLastnameContainingAndFirstnameContaining(@Param("searchText") String searchText);
 }
