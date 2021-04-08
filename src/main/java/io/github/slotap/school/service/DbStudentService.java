@@ -26,7 +26,11 @@ public class DbStudentService {
     }
 
     public void deleteStudent(final long id){
-        studentRepository.deleteById(id);
+        if(studentRepository.existsById(id)) {
+            Student student = studentRepository.findById(id).get();
+            student.getTeachers().forEach(teacher -> teacher.getStudents().remove(student));
+            studentRepository.deleteById(id);
+        }
     }
 
     public Optional<Student> getStudent (final long id){
