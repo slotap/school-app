@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class TeacherMapper {
+
     public TeacherDto mapToTeacherDto(final Teacher teacher){
         return new TeacherDto(
                 teacher.getId(),
@@ -17,8 +18,7 @@ public class TeacherMapper {
                 teacher.getAge(),
                 teacher.getEmail(),
                 teacher.getTeachingSubject(),
-                teacher.getStudents()
-        );
+                teacher.getStudents());
     }
     public List<TeacherDto> mapToTeacherDtoList(final List<Teacher> teacherList){
         return teacherList.stream()
