@@ -45,8 +45,8 @@ public class StudentController {
     @GetMapping("/{id}/teachers")
     public ResponseEntity<?> getFilteredTeachers(@PathVariable long id) {
         logger.info("Filtering all teachers assigned to a selected student");
-        return dbService.getEntity(id)
-                .map(StudentDto::getTeacherSet)
+        return dbService.getEntityFromDB(id)
+                .map(Student::getTeachers)
                 .map(teachers -> teachers.stream()
                         .map(teacherMapper::mapToTeacherDto)
                         .collect(Collectors.toSet()))

@@ -24,7 +24,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 @SpringJUnitWebConfig
@@ -49,9 +50,7 @@ class StudentControllerTest {
     @Test
     void shouldFetchEmptyStudentList() throws Exception {
         //Given
-            when(dbStudentService.getAll(any())).thenReturn(page);
-            when(page.getContent()).thenReturn(List.of());
-            when(studentMapper.mapToStudentDtoList(anyList())).thenReturn(List.of());
+            when(dbStudentService.getAll(any())).thenReturn(List.of());
 
         //When & Then
             mockMvc
@@ -65,11 +64,8 @@ class StudentControllerTest {
     @Test
     void shouldFetchAllStudentList() throws Exception {
         //Given
-            List<Student> studentList = List.of( new Student("Jan","Kowalski",22,"jkowalksi@Gmail.com","Politologia"));
             List<StudentDto> studentDtoList = List.of( new StudentDto(1,"Jan","Kowalski",22,"jkowalksi@Gmail.com","Politologia", Set.of()));
-            when(dbStudentService.getAll(any())).thenReturn(page);
-            when(page.getContent()).thenReturn(studentList);
-            when(studentMapper.mapToStudentDtoList(studentList)).thenReturn(studentDtoList);
+            when(dbStudentService.getAll(any())).thenReturn(studentDtoList);
 
         //When & Then
             mockMvc
@@ -90,10 +86,8 @@ class StudentControllerTest {
     @Test
     void shouldFetchOneStudent() throws Exception {
         //Given
-            Student student = new Student("Jan","Kowalski",22,"jkowalksi@Gmail.com","Politologia");
             StudentDto studentDto = new StudentDto(1,"Jan","Kowalski",22,"jkowalksi@Gmail.com","Politologia", Set.of()) ;
-            when(dbStudentService.getStudent(1L)).thenReturn(Optional.of(student));
-            when(studentMapper.mapToStudentDto(student)).thenReturn(studentDto);
+            when(dbStudentService.getEntity(1L)).thenReturn(Optional.of(studentDto));
 
         //When & Then
             mockMvc
@@ -113,7 +107,7 @@ class StudentControllerTest {
     @Test
     void shouldGetNotFoundWhenFetchingOneStudent() throws Exception {
         //Given
-        when(dbStudentService.getStudent(1L)).thenReturn(Optional.empty());
+        when(dbStudentService.getEntity(1L)).thenReturn(Optional.empty());
 
         //When & Then
         mockMvc
@@ -129,7 +123,7 @@ class StudentControllerTest {
         Student student = new Student("Jan","Kowalski",22,"jkowalksi@Gmail.com","Politologia");
         student.getTeachers().add(new Teacher("Andrzej", "Wajda", 55, "wajda@gmail.com","Filmografia"));
         TeacherDto teacherDto = new TeacherDto(1,"Andrzej", "Wajda", 55, "wajda@gmail.com","Filmografia",Set.of());
-        when(dbStudentService.getStudent(1L)).thenReturn(Optional.of(student));
+        when(dbStudentService.getEntityFromDB(1L)).thenReturn(Optional.of(student));
         when(teacherMapper.mapToTeacherDto(any())).thenReturn(teacherDto);
 
         //When & Then
@@ -150,10 +144,8 @@ class StudentControllerTest {
     @Test
     void shouldFindStudentsByName() throws Exception {
         //Given
-            List<Student> studentList = List.of( new Student("Jan","Kowalski",22,"jkowalksi@Gmail.com","Politologia"));
             List<StudentDto> studentDtoList = List.of( new StudentDto(1,"Jan","Kowalski",22,"jkowalksi@Gmail.com","Politologia", Set.of()));
-            when(dbStudentService.findByName("kow","J")).thenReturn(studentList);
-            when(studentMapper.mapToStudentDtoList(studentList)).thenReturn(studentDtoList);
+            when(dbStudentService.findByName("kow","J")).thenReturn(studentDtoList);
 
         //When & Then
             mockMvc
@@ -174,10 +166,8 @@ class StudentControllerTest {
     @Test
     void shouldCreateStudent() throws Exception {
         //Given
-            Student student = new Student("Jan","Kowalski",22,"jkowalksi@Gmail.com","Politologia");
             StudentDto studentDto = new StudentDto(1,"Jan","Kowalski",22,"jkowalksi@Gmail.com","Politologia", Set.of());
-            when(dbStudentService.saveStudent(any(Student.class))).thenReturn(student);
-            when(studentMapper.mapToStudentDto(student)).thenReturn(studentDto);
+            when(dbStudentService.save(any(Student.class))).thenReturn(studentDto);
 
             Gson gson = new Gson();
             String jsonContent = gson.toJson(studentDto);
@@ -196,7 +186,7 @@ class StudentControllerTest {
         //Given
             Student student = new Student("Jan","Kowalski",22,"jkowalksi@Gmail.com","Politologia");
             when(dbStudentService.existById(anyLong())).thenReturn(true);
-            when(dbStudentService.getStudent(anyLong())).thenReturn(Optional.of(student));
+            when(dbStudentService.getEntityFromDB(anyLong())).thenReturn(Optional.of(student));
 
             Gson gson = new Gson();
             String jsonContent = gson.toJson(student);

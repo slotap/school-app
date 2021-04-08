@@ -31,8 +31,6 @@ public class Student extends SchoolMember {
         this.degreeCourse = degreeCourse;
     }
 
-
-
     public void updateStudent(Student toUpdate) {
         setFirstname(toUpdate.getFirstname());
         setLastname(toUpdate.getLastname());
