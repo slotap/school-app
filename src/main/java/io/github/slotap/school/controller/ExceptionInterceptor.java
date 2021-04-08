@@ -8,10 +8,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
-public class ExceptionInterceptor   {
+public class ExceptionInterceptor {
+
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String,Object>>handleException(
             HttpServletRequest request, MethodArgumentNotValidException e) {
@@ -19,20 +21,13 @@ public class ExceptionInterceptor   {
         var fieldErrors = e.getFieldErrors();
 
         List<Map<String,String>> fieldErrorsMap = fieldErrors.stream()
-                .map(fieldError -> {
-                    var fieldErrorObject = new Object() {
-                        final String fieldName = fieldError.getField();
-                        final String errorMessage = fieldError.getDefaultMessage();
-                    };
-                    return Map.ofEntries(
-                            Map.entry("field", fieldErrorObject.fieldName),
-                            Map.entry("message", fieldErrorObject.errorMessage != null
-                                    ? fieldErrorObject.errorMessage
-                                    : ""));})
+                .map(fieldError ->  Map.ofEntries(
+                            Map.entry("field", fieldError.getField()),
+                            Map.entry("message", Optional.ofNullable(fieldError.getDefaultMessage()).orElse("null"))))
                 .collect(Collectors.toList());
 
         Map<String,Object> errorResponsePayload =
-                Map.of("path",request.getServletPath(), "errors",fieldErrorsMap);
+                Map.of("path", request.getServletPath(), "errors", fieldErrorsMap);
 
         return ResponseEntity.badRequest().body(errorResponsePayload);
     }
