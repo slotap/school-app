@@ -1,8 +1,9 @@
 package io.github.slotap.school.service;
 
+import io.github.slotap.school.mapper.StudentMapper;
 import io.github.slotap.school.model.Student;
+import io.github.slotap.school.model.StudentDto;
 import io.github.slotap.school.repository.StudentRepository;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -10,38 +11,58 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class DbStudentService {
+public class DbStudentService implements SchoolService<StudentDto, Student> {
+
     private final StudentRepository studentRepository;
+    private final StudentMapper studentMapper;
 
-    public DbStudentService(StudentRepository studentRepository) {
+    public DbStudentService(StudentRepository studentRepository, StudentMapper studentMapper) {
         this.studentRepository = studentRepository;
+        this.studentMapper = studentMapper;
     }
 
-    public Page<Student> getAll(Pageable page) {
-        return studentRepository.findAll(page);
+    @Override
+    public List<StudentDto> getAll(Pageable pageable) {
+        List<Student> studentList = studentRepository.findAll(pageable).getContent();
+        return studentMapper.mapToStudentDtoList(studentList);
+
     }
 
-    public Student saveStudent(final Student createStudent) {
-        return studentRepository.save(createStudent);
+    @Override
+    public StudentDto save(Student student) {
+        Student savedStudent =  studentRepository.save(student);
+        return studentMapper.mapToStudentDto(savedStudent);
+
     }
 
-    public void deleteStudent(final long id){
-        if(studentRepository.existsById(id)) {
+    @Override
+    public void delete(final long id) {
+        if (studentRepository.existsById(id)) {
             Student student = studentRepository.findById(id).get();
             student.getTeachers().forEach(teacher -> teacher.getStudents().remove(student));
             studentRepository.deleteById(id);
         }
     }
 
-    public Optional<Student> getStudent (final long id){
+    @Override
+    public Optional<StudentDto> getEntity(final long id) {
+         return studentRepository.findById(id)
+                 .map(student -> studentMapper.mapToStudentDto(student));
+    }
+
+    @Override
+    public Optional<Student> getEntityFromDB(long id) {
         return studentRepository.findById(id);
     }
 
-    public boolean existById(long id){
+    @Override
+    public boolean existById(long id) {
         return studentRepository.existsById(id);
     }
 
-    public List<Student> findByName(final String lastName, final String firstName){
-        return studentRepository.findByLastnameOrFirstnameOrderByLastname(lastName,firstName);
+    @Override
+    public List<StudentDto> findByName(String lastName, String firstName) {
+        List<Student> students = studentRepository.findByLastnameOrFirstnameOrderByLastname(lastName, firstName);
+        return studentMapper.mapToStudentDtoList(students);
     }
 }

@@ -1,6 +1,5 @@
 package io.github.slotap.school.controller;
 
-import io.github.slotap.school.mapper.StudentMapper;
 import io.github.slotap.school.mapper.TeacherMapper;
 import io.github.slotap.school.model.Student;
 import io.github.slotap.school.model.StudentDto;
@@ -21,66 +20,64 @@ import java.util.stream.Collectors;
 public class StudentController {
     private static final Logger logger = LoggerFactory.getLogger(StudentController.class);
     private final DbStudentService dbService;
-    private final StudentMapper studentMapper;
     private final TeacherMapper teacherMapper;
 
-    public StudentController(DbStudentService dbService, StudentMapper studentMapper, TeacherMapper teacherMapper) {
+    public StudentController(DbStudentService dbService, TeacherMapper teacherMapper) {
         this.dbService = dbService;
-        this.studentMapper = studentMapper;
         this.teacherMapper = teacherMapper;
     }
 
     @GetMapping
-    public ResponseEntity<List<StudentDto>> getAllStudents(Pageable page){
+    public ResponseEntity<List<StudentDto>> getAllStudents(Pageable page) {
         logger.info("Fetching all students - custom pageable");
-        List<Student> studentList = dbService.getAll(page).getContent();
-        return ResponseEntity.ok(studentMapper.mapToStudentDtoList(studentList));
+        List<StudentDto> studentList = dbService.getAll(page);
+        return ResponseEntity.ok(studentList);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<StudentDto> getOneStudent(@PathVariable long id){
+    public ResponseEntity<StudentDto> getOneStudent(@PathVariable long id) {
         logger.info("Fetching a student");
-            return dbService.getStudent(id)
-                    .map(student -> ResponseEntity.ok(studentMapper.mapToStudentDto(student)))
-                    .orElse(ResponseEntity.notFound().build());
+        return dbService.getEntity(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/{id}/teachers")
-    public ResponseEntity<?> getFilteredTeachers(@PathVariable long id){
+    public ResponseEntity<?> getFilteredTeachers(@PathVariable long id) {
         logger.info("Filtering all teachers assigned to a selected student");
-        return dbService.getStudent(id)
-                .map(Student::getTeachers)
+        return dbService.getEntity(id)
+                .map(StudentDto::getTeacherSet)
                 .map(teachers -> teachers.stream()
                         .map(teacherMapper::mapToTeacherDto)
                         .collect(Collectors.toSet()))
-                .map(teachersSet -> ResponseEntity.ok(teachersSet))
+                .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<StudentDto>> findStudentsByName(@RequestParam(name = "lastname") String lastName, @RequestParam(name = "firstname") String firstName ){
+    public ResponseEntity<List<StudentDto>> findStudentsByName(@RequestParam(name = "lastname") String lastName, @RequestParam(name = "firstname") String firstName) {
         logger.info("Looking for searched Teachers");
-        List<Student> resultList = dbService.findByName(lastName,firstName);
-        return ResponseEntity.ok(studentMapper.mapToStudentDtoList(resultList));
+        List<StudentDto> resultList = dbService.findByName(lastName, firstName);
+        return ResponseEntity.ok(resultList);
     }
 
     @PostMapping
-    public ResponseEntity<StudentDto> createStudent(@RequestBody @Valid Student newStudent){
+    public ResponseEntity<StudentDto> createStudent(@RequestBody @Valid Student newStudent) {
         logger.info("Creating new Student");
-        Student result = dbService.saveStudent(newStudent);
-        return ResponseEntity.created(URI.create("/" + result.getId())).body(studentMapper.mapToStudentDto(result));
+        StudentDto result = dbService.save(newStudent);
+        return ResponseEntity.created(URI.create("/" + result.getId())).body(result);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateStudent (@PathVariable long id, @RequestBody @Valid Student toUpdate ){
+    public ResponseEntity<?> updateStudent(@PathVariable long id, @RequestBody @Valid Student toUpdate) {
         logger.info("Updating Student");
-        if(!dbService.existById(id)){
+        if (!dbService.existById(id)) {
             return ResponseEntity.notFound().build();
         }
-        dbService.getStudent(id).ifPresent(student ->{
-                                                        student.updateStudent(toUpdate);
-                                                        dbService.saveStudent(student);
-                                            });
+        dbService.getEntityFromDB(id).ifPresent(student -> {
+            student.updateStudent(toUpdate);
+            dbService.save(student);
+        });
         return ResponseEntity.noContent().build();
     }
 
@@ -90,7 +87,7 @@ public class StudentController {
         if (!dbService.existById(id)) {
             return ResponseEntity.notFound().build();
         }
-        dbService.deleteStudent(id);
+        dbService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }
