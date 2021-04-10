@@ -25,14 +25,12 @@ public class DbStudentService implements SchoolService<StudentDto, Student> {
     public List<StudentDto> getAll(Pageable pageable) {
         List<Student> studentList = studentRepository.findAll(pageable).getContent();
         return studentMapper.mapToStudentDtoList(studentList);
-
     }
 
     @Override
     public StudentDto save(Student student) {
         Student savedStudent =  studentRepository.save(student);
         return studentMapper.mapToStudentDto(savedStudent);
-
     }
 
     @Override
@@ -45,13 +43,13 @@ public class DbStudentService implements SchoolService<StudentDto, Student> {
     }
 
     @Override
-    public Optional<StudentDto> getEntity(final long id) {
+    public Optional<StudentDto> getDtoData(final long id) {
          return studentRepository.findById(id)
-                 .map(student -> studentMapper.mapToStudentDto(student));
+                 .map(studentMapper::mapToStudentDto);
     }
 
     @Override
-    public Optional<Student> getEntityFromDB(long id) {
+    public Optional<Student> getData(long id) {
         return studentRepository.findById(id);
     }
 

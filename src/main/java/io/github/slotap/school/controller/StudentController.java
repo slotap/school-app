@@ -37,7 +37,7 @@ public class StudentController {
     @GetMapping("/{id}")
     public ResponseEntity<StudentDto> getOneStudent(@PathVariable long id) {
         logger.info("Fetching a student");
-        return dbService.getEntity(id)
+        return dbService.getDtoData(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -45,7 +45,7 @@ public class StudentController {
     @GetMapping("/{id}/teachers")
     public ResponseEntity<?> getFilteredTeachers(@PathVariable long id) {
         logger.info("Filtering all teachers assigned to a selected student");
-        return dbService.getEntityFromDB(id)
+        return dbService.getData(id)
                 .map(Student::getTeachers)
                 .map(teachers -> teachers.stream()
                         .map(teacherMapper::mapToTeacherDto)
@@ -74,7 +74,7 @@ public class StudentController {
         if (!dbService.existById(id)) {
             return ResponseEntity.notFound().build();
         }
-        dbService.getEntityFromDB(id).ifPresent(student -> {
+        dbService.getData(id).ifPresent(student -> {
             student.updateStudent(toUpdate);
             dbService.save(student);
         });

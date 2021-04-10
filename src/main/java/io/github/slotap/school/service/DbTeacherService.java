@@ -1,8 +1,9 @@
 package io.github.slotap.school.service;
 
+import io.github.slotap.school.mapper.TeacherMapper;
 import io.github.slotap.school.model.Teacher;
+import io.github.slotap.school.model.TeacherDto;
 import io.github.slotap.school.repository.TeacherRepository;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -10,34 +11,51 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class DbTeacherService {
+public class DbTeacherService implements SchoolService<TeacherDto, Teacher> {
     private final TeacherRepository teacherRepository;
+    private final TeacherMapper teacherMapper;
 
-    public DbTeacherService(TeacherRepository teacherRepository) {
+    public DbTeacherService(TeacherRepository teacherRepository, TeacherMapper teacherMapper) {
         this.teacherRepository = teacherRepository;
+        this.teacherMapper = teacherMapper;
     }
 
-    public Page<Teacher> getAll(Pageable page) {
-        return teacherRepository.findAll(page);
+    @Override
+    public List<TeacherDto> getAll(Pageable pageable) {
+        List<Teacher> teacherList = teacherRepository.findAll(pageable).getContent();
+        return teacherMapper.mapToTeacherDtoList(teacherList);
     }
 
-    public Teacher saveTeacher(final Teacher createTeacher) {
-        return teacherRepository.save(createTeacher);
+    @Override
+    public TeacherDto save(Teacher teacher) {
+        Teacher savedTeacher =  teacherRepository.save(teacher);
+        return teacherMapper.mapToTeacherDto(savedTeacher);
     }
 
-    public void deleteTeacher(final long id){
+    @Override
+    public void delete(long id) {
         teacherRepository.deleteById(id);
     }
 
-    public Optional<Teacher> getTeacher (final long id){
+    @Override
+    public Optional<TeacherDto> getDtoData(long id) {
+        return teacherRepository.findById(id)
+                .map(teacherMapper::mapToTeacherDto);
+    }
+
+    @Override
+    public Optional<Teacher> getData(long id) {
         return teacherRepository.findById(id);
     }
 
-    public boolean existById(long id){
+    @Override
+    public boolean existById(long id) {
         return teacherRepository.existsById(id);
     }
 
-    public List<Teacher> findByName(final String lastName, final String firstName){
-       return teacherRepository.findByLastnameOrFirstnameOrderByLastname(lastName,firstName);
+    @Override
+    public List<TeacherDto> findByName(String lastName, String firstName) {
+        List<Teacher> teacherList = teacherRepository.findByLastnameOrFirstnameOrderByLastname(lastName,firstName);
+        return teacherMapper.mapToTeacherDtoList(teacherList);
     }
 }

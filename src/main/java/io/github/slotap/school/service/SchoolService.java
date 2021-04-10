@@ -13,9 +13,9 @@ public interface SchoolService<T,S> {
 
     void delete(long id);
 
-    Optional<T> getEntity(long id);
+    Optional<T> getDtoData(long id);
 
-    Optional<S> getEntityFromDB(long id);
+    Optional<S> getData(long id);
 
     boolean existById(long id);
 

@@ -87,7 +87,7 @@ class StudentControllerTest {
     void shouldFetchOneStudent() throws Exception {
         //Given
             StudentDto studentDto = new StudentDto(1,"Jan","Kowalski",22,"jkowalksi@Gmail.com","Politologia", Set.of()) ;
-            when(dbStudentService.getEntity(1L)).thenReturn(Optional.of(studentDto));
+            when(dbStudentService.getDtoData(1L)).thenReturn(Optional.of(studentDto));
 
         //When & Then
             mockMvc
@@ -107,7 +107,7 @@ class StudentControllerTest {
     @Test
     void shouldGetNotFoundWhenFetchingOneStudent() throws Exception {
         //Given
-        when(dbStudentService.getEntity(1L)).thenReturn(Optional.empty());
+        when(dbStudentService.getDtoData(1L)).thenReturn(Optional.empty());
 
         //When & Then
         mockMvc
@@ -123,7 +123,7 @@ class StudentControllerTest {
         Student student = new Student("Jan","Kowalski",22,"jkowalksi@Gmail.com","Politologia");
         student.getTeachers().add(new Teacher("Andrzej", "Wajda", 55, "wajda@gmail.com","Filmografia"));
         TeacherDto teacherDto = new TeacherDto(1,"Andrzej", "Wajda", 55, "wajda@gmail.com","Filmografia",Set.of());
-        when(dbStudentService.getEntityFromDB(1L)).thenReturn(Optional.of(student));
+        when(dbStudentService.getData(1L)).thenReturn(Optional.of(student));
         when(teacherMapper.mapToTeacherDto(any())).thenReturn(teacherDto);
 
         //When & Then
@@ -186,7 +186,7 @@ class StudentControllerTest {
         //Given
             Student student = new Student("Jan","Kowalski",22,"jkowalksi@Gmail.com","Politologia");
             when(dbStudentService.existById(anyLong())).thenReturn(true);
-            when(dbStudentService.getEntityFromDB(anyLong())).thenReturn(Optional.of(student));
+            when(dbStudentService.getData(anyLong())).thenReturn(Optional.of(student));
 
             Gson gson = new Gson();
             String jsonContent = gson.toJson(student);

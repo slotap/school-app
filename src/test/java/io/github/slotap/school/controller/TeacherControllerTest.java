@@ -48,9 +48,7 @@ class TeacherControllerTest {
     @Test
     void shouldFetchEmptyTeacherList() throws Exception {
         //Given
-        when(dbTeacherService.getAll(any())).thenReturn(page);
-        when(page.getContent()).thenReturn(List.of());
-        when(teacherMapper.mapToTeacherDtoList(anyList())).thenReturn(List.of());
+        when(dbTeacherService.getAll(any())).thenReturn(List.of());
 
         //When & Then
         mockMvc
@@ -64,11 +62,8 @@ class TeacherControllerTest {
     @Test
     void shouldFetchAllStudentList() throws Exception {
         //Given
-        List<Teacher> teacherList = List.of( new Teacher("Jan","Kowalski",22,"jkowalksi@Gmail.com","Politologia"));
         List<TeacherDto> teacherDtoList = List.of( new TeacherDto(1,"Jan","Kowalski",22,"jkowalksi@Gmail.com","Politologia", Set.of()));
-        when(dbTeacherService.getAll(any())).thenReturn(page);
-        when(page.getContent()).thenReturn(teacherList);
-        when(teacherMapper.mapToTeacherDtoList(teacherList)).thenReturn(teacherDtoList);
+        when(dbTeacherService.getAll(any())).thenReturn(teacherDtoList);
 
         //When & Then
         mockMvc
@@ -89,10 +84,8 @@ class TeacherControllerTest {
     @Test
     void shouldFetchOneStudent() throws Exception {
         //Given
-        Teacher teacher = new Teacher("Jan","Kowalski",22,"jkowalksi@Gmail.com","Politologia");
         TeacherDto teacherDto = new TeacherDto(1,"Jan","Kowalski",22,"jkowalksi@Gmail.com","Politologia", Set.of()) ;
-        when(dbTeacherService.getTeacher(1L)).thenReturn(Optional.of(teacher));
-        when(teacherMapper.mapToTeacherDto(teacher)).thenReturn(teacherDto);
+        when(dbTeacherService.getDtoData(1L)).thenReturn(Optional.of(teacherDto));
 
         //When & Then
         mockMvc
@@ -112,7 +105,7 @@ class TeacherControllerTest {
     @Test
     void shouldGetNotFoundWhenFetchingOneStudent() throws Exception {
         //Given
-        when(dbTeacherService.getTeacher(1L)).thenReturn(Optional.empty());
+        when(dbTeacherService.getDtoData(1L)).thenReturn(Optional.empty());
 
         //When & Then
         mockMvc
@@ -128,7 +121,7 @@ class TeacherControllerTest {
         Teacher teacher = new Teacher("Jan","Kowalski",22,"jkowalksi@Gmail.com","Politologia");
         teacher.getStudents().add(new Student("Andrzej", "Wajda", 55, "wajda@gmail.com","Filmografia"));
         StudentDto studentDto = new StudentDto(1,"Andrzej", "Wajda", 55, "wajda@gmail.com","Filmografia",Set.of());
-        when(dbTeacherService.getTeacher(1L)).thenReturn(Optional.of(teacher));
+        when(dbTeacherService.getData(1L)).thenReturn(Optional.of(teacher));
         when(studentMapper.mapToStudentDto(any())).thenReturn(studentDto);
 
         //When & Then
@@ -149,10 +142,8 @@ class TeacherControllerTest {
     @Test
     void shouldFindStudentsByName() throws Exception {
         //Given
-        List<Teacher> teacherList = List.of( new Teacher("Jan","Kowalski",22,"jkowalksi@Gmail.com","Politologia"));
         List<TeacherDto> teacherDtoList = List.of( new TeacherDto(1,"Jan","Kowalski",22,"jkowalksi@Gmail.com","Politologia", Set.of()));
-        when(dbTeacherService.findByName("kow","J")).thenReturn(teacherList);
-        when(teacherMapper.mapToTeacherDtoList(teacherList)).thenReturn(teacherDtoList);
+        when(dbTeacherService.findByName("kow","J")).thenReturn(teacherDtoList);
 
         //When & Then
         mockMvc
@@ -173,10 +164,8 @@ class TeacherControllerTest {
     @Test
     void shouldCreateStudent() throws Exception {
         //Given
-        Teacher teacher = new Teacher("Jan","Kowalski",22,"jkowalksi@Gmail.com","Politologia");
         TeacherDto teacherDto = new TeacherDto(1,"Jan","Kowalski",22,"jkowalksi@Gmail.com","Politologia", Set.of());
-        when(dbTeacherService.saveTeacher(any(Teacher.class))).thenReturn(teacher);
-        when(teacherMapper.mapToTeacherDto(teacher)).thenReturn(teacherDto);
+        when(dbTeacherService.save(any(Teacher.class))).thenReturn(teacherDto);
 
         Gson gson = new Gson();
         String jsonContent = gson.toJson(teacherDto);
@@ -195,7 +184,7 @@ class TeacherControllerTest {
         //Given
         Teacher teacher = new Teacher("Jan","Kowalski",22,"jkowalksi@Gmail.com","Politologia");
         when(dbTeacherService.existById(anyLong())).thenReturn(true);
-        when(dbTeacherService.getTeacher(anyLong())).thenReturn(Optional.of(teacher));
+        when(dbTeacherService.getData(anyLong())).thenReturn(Optional.of(teacher));
 
         Gson gson = new Gson();
         String jsonContent = gson.toJson(teacher);
