@@ -7,6 +7,7 @@ import io.github.slotap.school.repository.StudentRepository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,7 +33,7 @@ public class DbStudentService implements SchoolService<StudentDto, Student> {
         Student savedStudent =  studentRepository.save(student);
         return studentMapper.mapToStudentDto(savedStudent);
     }
-
+    @Transactional
     @Override
     public void delete(final long id) {
         if (studentRepository.existsById(id)) {
