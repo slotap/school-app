@@ -14,9 +14,9 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 class DbTeacherServiceTest {
     @Autowired
-    private DbStudentService studentService;
+    private StudentMemberService studentService;
     @Autowired
-    private DbTeacherService teacherService;
+    private TeacherMemberService teacherService;
 
     @Test
     void testSaveTeacherToDb() {
