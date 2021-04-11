@@ -1,9 +1,7 @@
 package io.github.slotap.school.service;
 
-import io.github.slotap.school.model.Student;
-import io.github.slotap.school.model.StudentDto;
-import io.github.slotap.school.model.Teacher;
-import io.github.slotap.school.model.TeacherDto;
+import io.github.slotap.school.dto.StudentDto;
+import io.github.slotap.school.dto.TeacherDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,48 +21,48 @@ class DbStudentServiceTest {
     @Test
     void testSaveStudentToDb() {
         //Given
-        Student student = new Student("Jan", "Kowalski", 22, "jkowalksi@Gmail.com", "Politologia");
+        StudentDto student = new StudentDto("Jan", "Kowalski", 22, "jkowalksi@Gmail.com", "Politologia");
 
         //When
-        StudentDto savedStudent = studentService.save(student);
+        StudentDto savedStudent = studentService.saveMember(student);
         long id = savedStudent.getId();
 
         //Then
-        assertTrue(studentService.getData(id).isPresent());
+        assertTrue(studentService.getById(id).isPresent());
 
         //CleanUp
-        studentService.delete(id);
+        studentService.deleteMember(id);
     }
 
     @Test
     void testDeleteStudentFromDbWithoutDeletingTeacher() {
         //Given
-        Student student= new Student("Jan","Kowalski",22,"jkowalksi@Gmail.com","Politologia");
-        Teacher teacher = new Teacher("Andrzej","Wajda",40,"aWajda@Gmail.com","Historia");
+        StudentDto student= new StudentDto("Jan","Kowalski",22,"jkowalksi@Gmail.com","Politologia");
+        TeacherDto teacher = new TeacherDto("Andrzej","Wajda",40,"aWajda@Gmail.com","Historia");
         student.getTeachers().add(teacher);
-        StudentDto savedStudent = studentService.save(student);
-        TeacherDto savedTeacher = teacherService.save(teacher);
+        StudentDto savedStudent = studentService.saveMember(student);
+        TeacherDto savedTeacher = teacherService.saveMember(teacher);
 
         //When
-        studentService.delete(savedStudent.getId());
+        studentService.deleteMember(savedStudent.getId());
 
         //Then
-        assertTrue(studentService.getData(savedStudent.getId()).isEmpty());
-        assertTrue(teacherService.getData(savedTeacher.getId()).isPresent());
+        assertTrue(studentService.getById(savedStudent.getId()).isEmpty());
+        assertTrue(teacherService.getById(savedTeacher.getId()).isPresent());
 
         //CleanUp
-        teacherService.delete(savedTeacher.getId());
+        teacherService.deleteMember(savedTeacher.getId());
     }
 
     @Test
     void testGetStudentFromDBandReturnDto(){
         //Given
-        Student student = new Student("Jan", "Kowalski", 22, "jkowalksi@Gmail.com", "Politologia");
-        StudentDto savedStudent = studentService.save(student);
+        StudentDto student = new StudentDto("Jan", "Kowalski", 22, "jkowalksi@Gmail.com", "Politologia");
+        StudentDto savedStudent = studentService.saveMember(student);
         long id = savedStudent.getId();
 
         //When
-        Optional<StudentDto> studentDto = studentService.getDtoData(id);
+        Optional<StudentDto> studentDto = studentService.getById(id);
 
         //Then
         assertEquals(student.getFirstname(), studentDto.get().getFirstname());
@@ -74,57 +72,57 @@ class DbStudentServiceTest {
         assertEquals(student.getDegreeCourse(), studentDto.get().getDegreeCourse());
 
         //CleanUp
-        studentService.delete(id);
+        studentService.deleteMember(id);
     }
 
     @Test
     void testFindStudentByName(){
         //Given
-        Student student = new Student("Jan", "Kowalski", 22, "jkowalksi@Gmail.com", "Politologia");
-        StudentDto savedStudent = studentService.save(student);
+        StudentDto student = new StudentDto("Jan", "Kowalski", 22, "jkowalksi@Gmail.com", "Politologia");
+        StudentDto savedStudent = studentService.saveMember(student);
         long id = savedStudent.getId();
 
         //When
-        List<StudentDto> studentDtoList = studentService.findByName("Kowalski","Jan");
+        List<StudentDto> studentDtoList = studentService.getByLastnameFirstname("Kowalski","Jan");
 
         //Then
         assertNotEquals(0, studentDtoList.size());
 
         //CleanUp
-        studentService.delete(id);
+        studentService.deleteMember(id);
     }
 
     @Test
     void testFindStudentByNameIfFirstnameEmpty(){
         //Given
-        Student student = new Student("Jan", "Kowalski", 22, "jkowalksi@Gmail.com", "Politologia");
-        StudentDto savedStudent = studentService.save(student);
+        StudentDto student = new StudentDto("Jan", "Kowalski", 22, "jkowalksi@Gmail.com", "Politologia");
+        StudentDto savedStudent = studentService.saveMember(student);
         long id = savedStudent.getId();
 
         //When
-        List<StudentDto> studentDtoList = studentService.findByName("Kowalski","");
+        List<StudentDto> studentDtoList = studentService.getByLastnameFirstname("Kowalski","");
 
         //Then
         assertNotEquals(0, studentDtoList.size());
 
         //CleanUp
-        studentService.delete(id);
+        studentService.deleteMember(id);
     }
 
     @Test
     void testFindStudentByNameIfLastnameEmpty(){
         //Given
-        Student student = new Student("Jan", "Kowalski", 22, "jkowalksi@Gmail.com", "Politologia");
-        StudentDto savedStudent = studentService.save(student);
+        StudentDto student = new StudentDto("Jan", "Kowalski", 22, "jkowalksi@Gmail.com", "Politologia");
+        StudentDto savedStudent = studentService.saveMember(student);
         long id = savedStudent.getId();
 
         //When
-        List<StudentDto> studentDtoList = studentService.findByName("","Jan");
+        List<StudentDto> studentDtoList = studentService.getByLastnameFirstname("","Jan");
 
         //Then
         assertNotEquals(0, studentDtoList.size());
 
         //CleanUp
-        studentService.delete(id);
+        studentService.deleteMember(id);
     }
 }

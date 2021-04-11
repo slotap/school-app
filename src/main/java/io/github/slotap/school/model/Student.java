@@ -3,7 +3,6 @@ package io.github.slotap.school.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -13,9 +12,7 @@ import java.util.Set;
 public class Student extends SchoolMember {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NotNull
     private long id;
-    @NotNull(message = "Course Name required")
     private String degreeCourse;
     @ManyToMany(mappedBy = "students", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JsonIgnore
@@ -31,13 +28,19 @@ public class Student extends SchoolMember {
         this.degreeCourse = degreeCourse;
     }
 
-    public void updateStudent(Student toUpdate) {
+    public Student(long id, String firstname, String lastname, int age, String email, String degreeCourse){
+        this(firstname,lastname,age,email,degreeCourse);
+        this.id = id;
+    }
+
+    public Student updateStudent(Student toUpdate) {
         setFirstname(toUpdate.getFirstname());
         setLastname(toUpdate.getLastname());
         setEmail(toUpdate.getEmail());
         setAge(toUpdate.getAge());
         setDegreeCourse(toUpdate.getDegreeCourse());
         setTeachers(toUpdate.getTeachers());
+        return this;
     }
 
     public String getDegreeCourse() {

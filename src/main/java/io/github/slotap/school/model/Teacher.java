@@ -1,10 +1,6 @@
 package io.github.slotap.school.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -14,9 +10,7 @@ import java.util.Set;
 public class Teacher extends SchoolMember {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NotNull
     private long id;
-    @NotNull(message = "Subject name required")
     private String teachingSubject;
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinTable(name = "students_teachers",
@@ -28,7 +22,7 @@ public class Teacher extends SchoolMember {
                             @JoinColumn(name="student_id", referencedColumnName = "id",
                             nullable = false,updatable = false)
                         })
-    @JsonIgnore
+
     private Set<Student> students = new HashSet<>();
 
     public Teacher(){}
@@ -41,13 +35,19 @@ public class Teacher extends SchoolMember {
         this.teachingSubject = subject;
     }
 
-    public void updateTeacher(Teacher toUpdate) {
+    public Teacher(long id, String firstname, String lastname, int age, String email, String subject) {
+        this(firstname,lastname,age,email,subject);
+        this.id = id;
+    }
+
+    public Teacher updateTeacher(Teacher toUpdate) {
         setFirstname(toUpdate.getFirstname());
         setLastname(toUpdate.getLastname());
         setEmail(toUpdate.getEmail());
         setAge(toUpdate.getAge());
         setTeachingSubject(toUpdate.getTeachingSubject());
         setStudents(toUpdate.getStudents());
+        return this;
     }
 
     public String getTeachingSubject() {

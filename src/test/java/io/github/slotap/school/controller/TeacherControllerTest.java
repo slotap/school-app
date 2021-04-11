@@ -1,19 +1,14 @@
 package io.github.slotap.school.controller;
 
 import com.google.gson.Gson;
-import io.github.slotap.school.mapper.StudentMapper;
-import io.github.slotap.school.mapper.TeacherMapper;
-import io.github.slotap.school.model.Student;
-import io.github.slotap.school.model.StudentDto;
-import io.github.slotap.school.model.Teacher;
-import io.github.slotap.school.model.TeacherDto;
-import io.github.slotap.school.service.DbTeacherService;
+import io.github.slotap.school.dto.StudentDto;
+import io.github.slotap.school.dto.TeacherDto;
+import io.github.slotap.school.service.TeacherMemberService;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import org.springframework.test.web.servlet.MockMvc;
@@ -24,7 +19,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 @SpringJUnitWebConfig
@@ -34,21 +30,12 @@ class TeacherControllerTest {
     MockMvc mockMvc;
 
     @MockBean
-    DbTeacherService dbTeacherService;
-
-    @MockBean
-    StudentMapper studentMapper;
-
-    @MockBean
-    TeacherMapper teacherMapper;
-
-    @MockBean
-    Page<Teacher> page;
+    TeacherMemberService teacherService;
 
     @Test
     void shouldFetchEmptyTeacherList() throws Exception {
         //Given
-        when(dbTeacherService.getAll(any())).thenReturn(List.of());
+        when(teacherService.getAllMembers(any())).thenReturn(List.of());
 
         //When & Then
         mockMvc
@@ -63,7 +50,7 @@ class TeacherControllerTest {
     void shouldFetchAllStudentList() throws Exception {
         //Given
         List<TeacherDto> teacherDtoList = List.of( new TeacherDto(1,"Jan","Kowalski",22,"jkowalksi@Gmail.com","Politologia", Set.of()));
-        when(dbTeacherService.getAll(any())).thenReturn(teacherDtoList);
+        when(teacherService.getAllMembers(any())).thenReturn(teacherDtoList);
 
         //When & Then
         mockMvc
@@ -78,14 +65,14 @@ class TeacherControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].age", Matchers.is(22)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].email", Matchers.is("jkowalksi@Gmail.com")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].teachingSubject", Matchers.is("Politologia")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].studentSet", Matchers.hasSize(0)));
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].students", Matchers.hasSize(0)));
     }
 
     @Test
     void shouldFetchOneStudent() throws Exception {
         //Given
         TeacherDto teacherDto = new TeacherDto(1,"Jan","Kowalski",22,"jkowalksi@Gmail.com","Politologia", Set.of()) ;
-        when(dbTeacherService.getDtoData(1L)).thenReturn(Optional.of(teacherDto));
+        when(teacherService.getById(1L)).thenReturn(Optional.of(teacherDto));
 
         //When & Then
         mockMvc
@@ -99,13 +86,13 @@ class TeacherControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.age", Matchers.is(22)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.email", Matchers.is("jkowalksi@Gmail.com")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.teachingSubject", Matchers.is("Politologia")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.studentSet", Matchers.hasSize(0)));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.students", Matchers.hasSize(0)));
     }
 
     @Test
     void shouldGetNotFoundWhenFetchingOneStudent() throws Exception {
         //Given
-        when(dbTeacherService.getDtoData(1L)).thenReturn(Optional.empty());
+        when(teacherService.getById(1L)).thenReturn(Optional.empty());
 
         //When & Then
         mockMvc
@@ -116,13 +103,11 @@ class TeacherControllerTest {
     }
 
     @Test
-    void shouldFetchFilteredTeachers() throws Exception {
+    void shouldFetchFilteredStudents() throws Exception {
         //Given
-        Teacher teacher = new Teacher("Jan","Kowalski",22,"jkowalksi@Gmail.com","Politologia");
-        teacher.getStudents().add(new Student("Andrzej", "Wajda", 55, "wajda@gmail.com","Filmografia"));
-        StudentDto studentDto = new StudentDto(1,"Andrzej", "Wajda", 55, "wajda@gmail.com","Filmografia",Set.of());
-        when(dbTeacherService.getData(1L)).thenReturn(Optional.of(teacher));
-        when(studentMapper.mapToStudentDto(any())).thenReturn(studentDto);
+        TeacherDto teacher = new TeacherDto("Jan","Kowalski",22,"jkowalksi@Gmail.com","Politologia");
+        teacher.getStudents().add(new StudentDto(1,"Andrzej", "Wajda", 55, "wajda@gmail.com","Filmografia"));
+        when(teacherService.getById(1L)).thenReturn(Optional.of(teacher));
 
         //When & Then
         mockMvc
@@ -135,15 +120,14 @@ class TeacherControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].lastname", Matchers.is("Wajda")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].age", Matchers.is(55)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].email", Matchers.is("wajda@gmail.com")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].degreeCourse", Matchers.is("Filmografia")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].teacherSet", Matchers.hasSize(0)));
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].degreeCourse", Matchers.is("Filmografia")));
     }
 
     @Test
-    void shouldFindStudentsByName() throws Exception {
+    void shouldFindTeachersByName() throws Exception {
         //Given
-        List<TeacherDto> teacherDtoList = List.of( new TeacherDto(1,"Jan","Kowalski",22,"jkowalksi@Gmail.com","Politologia", Set.of()));
-        when(dbTeacherService.findByName("kow","J")).thenReturn(teacherDtoList);
+        List<TeacherDto> teacherDtoList = List.of( new TeacherDto(1,"Jan","Kowalski",22,"jkowalksi@Gmail.com","Politologia"));
+        when(teacherService.getByLastnameFirstname("kow","J")).thenReturn(teacherDtoList);
 
         //When & Then
         mockMvc
@@ -158,14 +142,14 @@ class TeacherControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].age", Matchers.is(22)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].email", Matchers.is("jkowalksi@Gmail.com")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].teachingSubject", Matchers.is("Politologia")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].studentSet", Matchers.hasSize(0)));
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].students", Matchers.hasSize(0)));
     }
 
     @Test
     void shouldCreateStudent() throws Exception {
         //Given
         TeacherDto teacherDto = new TeacherDto(1,"Jan","Kowalski",22,"jkowalksi@Gmail.com","Politologia", Set.of());
-        when(dbTeacherService.save(any(Teacher.class))).thenReturn(teacherDto);
+        when(teacherService.saveMember(any(TeacherDto.class))).thenReturn(teacherDto);
 
         Gson gson = new Gson();
         String jsonContent = gson.toJson(teacherDto);
@@ -182,9 +166,8 @@ class TeacherControllerTest {
     @Test
     void shouldUpdateStudent() throws Exception {
         //Given
-        Teacher teacher = new Teacher("Jan","Kowalski",22,"jkowalksi@Gmail.com","Politologia");
-        when(dbTeacherService.existById(anyLong())).thenReturn(true);
-        when(dbTeacherService.getData(anyLong())).thenReturn(Optional.of(teacher));
+        TeacherDto teacher = new TeacherDto("Jan","Kowalski",22,"jkowalksi@Gmail.com","Politologia");
+        when(teacherService.updateMember(anyLong(),any(TeacherDto.class))).thenReturn(Optional.of(teacher));
 
         Gson gson = new Gson();
         String jsonContent = gson.toJson(teacher);

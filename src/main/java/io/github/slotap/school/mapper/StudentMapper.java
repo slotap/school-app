@@ -1,22 +1,16 @@
 package io.github.slotap.school.mapper;
 
+import io.github.slotap.school.dto.StudentDto;
+import io.github.slotap.school.dto.TeacherDto;
 import io.github.slotap.school.model.Student;
-import io.github.slotap.school.model.StudentDto;
-import org.springframework.stereotype.Service;
+import io.github.slotap.school.model.Teacher;
 
-import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-@Service
 public class StudentMapper {
 
-    public List<StudentDto> mapToStudentDtoList(final List<Student> studentList){
-        return studentList.stream()
-                .map(this::mapToStudentDto)
-                .collect(Collectors.toList());
-    }
-
-    public StudentDto mapToStudentDto(final Student student) {
+    public static StudentDto mapToStudentDto(final Student student) {
         return new StudentDto(
                     student.getId(),
                     student.getFirstname(),
@@ -24,6 +18,34 @@ public class StudentMapper {
                     student.getAge(),
                     student.getEmail(),
                     student.getDegreeCourse(),
-                    student.getTeachers());
+                    mapTeachers(student.getTeachers()));
+    }
+
+    private static Set<TeacherDto> mapTeachers(Set<Teacher> teachers) {
+        return teachers
+                .stream()
+                .map(TeacherMapper::mapToTeacherDtoWithoutStudents)
+                .collect(Collectors.toSet());
+    }
+
+    public static Student mapToStudent(final StudentDto studentDto) {
+        return new Student(
+                studentDto.getId(),
+                studentDto.getFirstname(),
+                studentDto.getLastname(),
+                studentDto.getAge(),
+                studentDto.getEmail(),
+                studentDto.getDegreeCourse()
+        );
+    }
+
+    public static StudentDto mapToStudentDtoWithoutTeachers(final Student student) {
+        return new StudentDto(
+                student.getId(),
+                student.getFirstname(),
+                student.getLastname(),
+                student.getAge(),
+                student.getEmail(),
+                student.getDegreeCourse());
     }
 }

@@ -1,9 +1,7 @@
 package io.github.slotap.school.service;
 
-import io.github.slotap.school.model.Student;
-import io.github.slotap.school.model.StudentDto;
-import io.github.slotap.school.model.Teacher;
-import io.github.slotap.school.model.TeacherDto;
+import io.github.slotap.school.dto.StudentDto;
+import io.github.slotap.school.dto.TeacherDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,48 +21,48 @@ class DbTeacherServiceTest {
     @Test
     void testSaveTeacherToDb() {
         //Given
-        Teacher teacher = new Teacher("Jan", "Kowalski", 22, "jkowalksi@Gmail.com", "Politologia");
+        TeacherDto teacher = new TeacherDto("Jan", "Kowalski", 22, "jkowalksi@Gmail.com", "Politologia");
 
         //When
-        TeacherDto savedTeacher = teacherService.save(teacher);
+        TeacherDto savedTeacher = teacherService.saveMember(teacher);
         long id = savedTeacher.getId();
 
         //Then
-        assertTrue(teacherService.getData(id).isPresent());
+        assertTrue(teacherService.getById(id).isPresent());
 
         //CleanUp
-        teacherService.delete(id);
+        teacherService.deleteMember(id);
     }
 
     @Test
     void testDeleteTeacherFromDbWithoutDeletingStudent() {
         //Given
-        Student student= new Student("Jan","Kowalski",22,"jkowalksi@Gmail.com","Politologia");
-        Teacher teacher = new Teacher("Andrzej","Wajda",40,"aWajda@Gmail.com","Historia");
+        StudentDto student= new StudentDto("Jan","Kowalski",22,"jkowalksi@Gmail.com","Politologia");
+        TeacherDto teacher = new TeacherDto("Andrzej","Wajda",40,"aWajda@Gmail.com","Historia");
         teacher.getStudents().add(student);
-        TeacherDto savedTeacher = teacherService.save(teacher);
-        StudentDto savedStudent = studentService.save(student);
+        TeacherDto savedTeacher = teacherService.saveMember(teacher);
+        StudentDto savedStudent = studentService.saveMember(student);
 
         //When
-        teacherService.delete(savedTeacher.getId());
+        teacherService.deleteMember(savedTeacher.getId());
 
         //Then
-        assertTrue(teacherService.getData(savedTeacher.getId()).isEmpty());
-        assertTrue(studentService.getData(savedStudent.getId()).isPresent());
+        assertTrue(teacherService.getById(savedTeacher.getId()).isEmpty());
+        assertTrue(studentService.getById(savedStudent.getId()).isPresent());
 
         //CleanUp
-        studentService.delete(savedTeacher.getId());
+        studentService.deleteMember(savedTeacher.getId());
     }
 
     @Test
     void testGetTeacherFromDBandReturnDto(){
         //Given
-        Teacher teacher = new Teacher("Jan", "Kowalski", 22, "jkowalksi@Gmail.com", "Politologia");
-        TeacherDto savedTeacher = teacherService.save(teacher);
+        TeacherDto teacher = new TeacherDto("Jan", "Kowalski", 22, "jkowalksi@Gmail.com", "Politologia");
+        TeacherDto savedTeacher = teacherService.saveMember(teacher);
         long id = savedTeacher.getId();
 
         //When
-        Optional<TeacherDto> teacherDto = teacherService.getDtoData(id);
+        Optional<TeacherDto> teacherDto = teacherService.getById(id);
 
         //Then
         assertEquals(teacher.getFirstname(), teacherDto.get().getFirstname());
@@ -74,57 +72,57 @@ class DbTeacherServiceTest {
         assertEquals(teacher.getTeachingSubject(), teacherDto.get().getTeachingSubject());
 
         //CleanUp
-        studentService.delete(id);
+        studentService.deleteMember(id);
     }
 
     @Test
     void testFindTeacherByName(){
         //Given
-        Teacher teacher = new Teacher("Jan", "Kowalski", 22, "jkowalksi@Gmail.com", "Politologia");
-        TeacherDto savedTeacher = teacherService.save(teacher);
+        TeacherDto teacher = new TeacherDto("Jan", "Kowalski", 22, "jkowalksi@Gmail.com", "Politologia");
+        TeacherDto savedTeacher = teacherService.saveMember(teacher);
         long id = savedTeacher.getId();
 
         //When
-        List<TeacherDto> teacherDtoList = teacherService.findByName("Kowalski","Jan");
+        List<TeacherDto> teacherDtoList = teacherService.getByLastnameFirstname("Kowalski","Jan");
 
         //Then
         assertNotEquals(0, teacherDtoList.size());
 
         //CleanUp
-        teacherService.delete(id);
+        teacherService.deleteMember(id);
     }
 
     @Test
     void testFindTeacherByNameIfFirstnameEmpty(){
         //Given
-        Teacher teacher = new Teacher("Jan", "Kowalski", 22, "jkowalksi@Gmail.com", "Politologia");
-        TeacherDto savedTeacher = teacherService.save(teacher);
+        TeacherDto teacher = new TeacherDto("Jan", "Kowalski", 22, "jkowalksi@Gmail.com", "Politologia");
+        TeacherDto savedTeacher = teacherService.saveMember(teacher);
         long id = savedTeacher.getId();
 
         //When
-        List<TeacherDto> teacherDtoList = teacherService.findByName("Kowalski","");
+        List<TeacherDto> teacherDtoList = teacherService.getByLastnameFirstname("Kowalski","");
 
         //Then
         assertNotEquals(0, teacherDtoList.size());
 
         //CleanUp
-        teacherService.delete(id);
+        teacherService.deleteMember(id);
     }
 
     @Test
     void testFindStudentByNameIfLastnameEmpty(){
         //Given
-        Teacher teacher = new Teacher("Jan", "Kowalski", 22, "jkowalksi@Gmail.com", "Politologia");
-        TeacherDto savedTeacher = teacherService.save(teacher);
+        TeacherDto teacher = new TeacherDto("Jan", "Kowalski", 22, "jkowalksi@Gmail.com", "Politologia");
+        TeacherDto savedTeacher = teacherService.saveMember(teacher);
         long id = savedTeacher.getId();
 
         //When
-        List<TeacherDto> teacherDtoList = teacherService.findByName("","Jan");
+        List<TeacherDto> teacherDtoList = teacherService.getByLastnameFirstname("","Jan");
 
         //Then
         assertNotEquals(0, teacherDtoList.size());
 
         //CleanUp
-        teacherService.delete(id);
+        teacherService.deleteMember(id);
     }
 }

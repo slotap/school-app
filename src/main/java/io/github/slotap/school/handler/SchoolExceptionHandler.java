@@ -1,4 +1,4 @@
-package io.github.slotap.school.controller;
+package io.github.slotap.school.handler;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -12,7 +12,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
-public class ExceptionInterceptor {
+public class SchoolExceptionHandler {
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String,Object>>handleException(
